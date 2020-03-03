@@ -1,0 +1,45 @@
+service: onnx-inference-lambda
+
+provider:
+  name: aws
+  runtime: python3.7
+  memorySize: 3008
+  timeout: 10
+  tracing:
+    lambda: true
+
+package:
+    individually: true
+
+plugins:
+  - serverless-package-python-functions
+
+custom:
+  pkgPyFuncs: # plugin configuration
+    buildDir: _build
+    useDocker: true
+    requirementsFile: 'requirements.txt'
+    globalRequirements:
+      - ./requirements.txt
+    #globalIncludes:
+    #  - ./common_files
+    cleanup: false
+
+layers:
+  Densenet121Layer:
+    path: densenet121
+
+functions:
+  inference-function:
+    name: onnx-inference-${opt:stage}
+    events:
+      - http:
+          path: /predict
+          method: post
+    handler: handler.inference
+    layers:
+      - { Ref: Densenet121LayerLambdaLayer }
+    package:
+      include:
+        - inference-function
+      artifact: ${self:custom.pkgPyFuncs.buildDir}/onnx-inference-${opt:stage}.zip
