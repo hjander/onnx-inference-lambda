@@ -13,6 +13,7 @@ package:
 
 plugins:
   - serverless-package-python-functions
+  - serverless-apigw-binary
 
 custom:
   pkgPyFuncs: # plugin configuration
@@ -24,6 +25,10 @@ custom:
     #globalIncludes:
     #  - ./common_files
     cleanup: false
+  apigwBinary:
+    types:
+      - 'image/jpeg'
+      - 'image/png'
 
 layers:
   Densenet121Layer:
